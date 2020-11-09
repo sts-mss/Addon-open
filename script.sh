@@ -70,7 +70,7 @@ firewall-cmd --list-all
 
 # Splunk Resources Limits
 cd $tmp_dir_path
-wget -O 99-splunk.conf 'https://vegalayer.com/splunk/configs/99-splunk.conf'
+wget -O 99-splunk.conf 'https://vegalayer.com/splunk/configs/99-splunk.conf' --no-check-certificate
 
 echo "[+] 99-splunk.conf -> /etc/security/limits.d/"
 mv 99-splunk.conf /etc/security/limits.d/
@@ -87,7 +87,7 @@ cat /sys/kernel/mm/transparent_hugepage/defrag
 
 # Disable THP at boot
 cd $tmp_dir_path
-wget -O disable-thp.service 'https://vegalayer.com/splunk/configs/disable-thp.service'
+wget -O disable-thp.service 'https://vegalayer.com/splunk/configs/disable-thp.service' --no-check-certificate
 echo "[+] disable-thp.service -> /etc/systemd/system/"
 mv disable-thp.service /etc/systemd/system/
 

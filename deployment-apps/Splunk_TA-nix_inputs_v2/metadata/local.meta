@@ -1,0 +1,14 @@
+[]
+access = read : [ * ], write : [ admin ]
+export = system
+
+[app/install/state]
+version = 7.2.1
+modtime = 1557135567.975052000
+
+[tags/eventtype%3DNix_OS_test]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = baha_admin
+version = 7.2.1
+modtime = 1557650696.861829000

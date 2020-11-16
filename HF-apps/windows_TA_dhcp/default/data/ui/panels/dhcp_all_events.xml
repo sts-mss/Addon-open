@@ -1,0 +1,18 @@
+<panel> <table>
+        <search>
+          <query>sourcetype=dhcp |transaction nt_host maxspan=10s|table _time level host signature description nt_host ip mac|</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="level">
+          <colorPalette type="map">{"info":#A2CC3E,"warn":#F7BC38,"error":#ED8440}</colorPalette>
+        </format>
+      </table></panel>

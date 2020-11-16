@@ -1,0 +1,23 @@
+[]
+access = read : [ * ], write : [ admin ]
+export = system
+
+[inputs/WinEventLog%3A%2F%2FDFS%20Replication]
+owner = nobody
+version = 7.2.6
+modtime = 1558439170.148967100
+
+[inputs/WinEventLog%3A%2F%2FDirectory%20Service]
+owner = nobody
+version = 7.2.6
+modtime = 1558439170.175938900
+
+[inputs/WinEventLog%3A%2F%2FFile%20Replication%20Service]
+owner = nobody
+version = 7.2.6
+modtime = 1558440385.352584200
+
+[inputs/WinEventLog%3A%2F%2FKey%20Management%20Service]
+owner = nobody
+version = 7.2.6
+modtime = 1558439170.224933000

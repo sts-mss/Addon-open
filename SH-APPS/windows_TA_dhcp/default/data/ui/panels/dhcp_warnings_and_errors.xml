@@ -1,0 +1,21 @@
+<panel><title>Warnings and Errors</title>
+      <table>
+        <search>
+          <query>sourcetype=dhcp level!=info id!=36
+| table _time level host signature description nt_host ip mac quarantine_info
+| sort - _time</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="level">
+          <colorPalette type="map">{"info":#6DB7C6,"warn":#F7BC38,"error":#ED8440}</colorPalette>
+        </format>
+      </table></panel>

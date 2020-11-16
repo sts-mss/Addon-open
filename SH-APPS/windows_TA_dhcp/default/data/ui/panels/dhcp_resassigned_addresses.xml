@@ -1,0 +1,21 @@
+<panel> <title>Reassigned IP Addresses</title>
+      <viz type="timeline_app.timeline">
+        <search>
+          <query>sourcetype=dhcp ip=* nt_host=* action=added   | dedup ip nt_host|eventstats count(nt_host) as count by ip |where count&gt;1|table  _time ip nt_host</query>
+          <earliest>-48h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="timeline_app.timeline.axisTimeFormat">SECONDS</option>
+        <option name="timeline_app.timeline.colorMode">categorical</option>
+        <option name="timeline_app.timeline.maxColor">#d93f3c</option>
+        <option name="timeline_app.timeline.minColor">#FFE8E8</option>
+        <option name="timeline_app.timeline.numOfBins">4</option>
+        <option name="timeline_app.timeline.tooltipTimeFormat">SECONDS</option>
+        <option name="timeline_app.timeline.useColors">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz></panel>

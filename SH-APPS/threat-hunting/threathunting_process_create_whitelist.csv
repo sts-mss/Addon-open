@@ -1,0 +1,13 @@
+added_date,contact,hash_sha256,host_fqdn,mitre_technique_id,process_command_line,process_parent_path,process_path,reason,user_name
+2019-11-02,admin,*,*,T1117,"C:\Windows\system32\rundll32.exe /d acproxy.dll,PerformAutochkOperations",C:\Windows\System32\services.exe,C:\Windows\System32\rundll32.exe,System Default,*
+2019-11-02,admin,*,*,T1117,"C:\Windows\system32\rundll32.exe /d srrstr.dll,ExecuteScheduledSPPCreation",C:\Windows\System32\services.exe,C:\Windows\System32\rundll32.exe,System Default,*
+2019-11-02,admin,*,*,T1085,"C:\Windows\system32\rundll32.exe /d srrstr.dll,ExecuteScheduledSPPCreation",C:\Windows\System32\services.exe,C:\Windows\System32\rundll32.exe,System Default,*
+2019-11-02,admin,*,*,T1085,"C:\Windows\system32\rundll32.exe /d acproxy.dll,PerformAutochkOperations",C:\Windows\System32\services.exe,C:\Windows\System32\rundll32.exe,System Default,*
+2019-11-02,admin,0B9BC863E2807B6886760480083E51BA8A66118659F4FF274E7B73944D2219F5,*,T1059,C:\Windows\system32\cmd.exe /c wmic os get LocalDateTime /value 2&gt;nul,C:\Windows\System32\cmd.exe,C:\Windows\System32\cmd.exe,Splunk batches,*
+2019-11-01,admin,D0290EE7F8E56033D5224C5FDE9F76CE15328C45107A104F4E910DA445855C7D,*,T1047,wmic os get LocalDateTime /value,C:\Windows\System32\cmd.exe,C:\Windows\System32\wbem\WMIC.exe,Splunk Batches,NT AUTHORITY\SYSTEM
+2019-11-01,admin,DA3AD32583644BD20116F0479C178F7C7C0B730728F4C02A438C0D19378C83D9,*,T1047,wmic os get LocalDateTime /value,C:\Windows\System32\cmd.exe,C:\Windows\System32\wbem\WMIC.exe,Splunk Batches,NT AUTHORITY\SYSTEM
+2019-11-01,admin,*,*,T1047,wmic os get LocalDateTime /value,C:\Windows\System32\cmd.exe,C:\Windows\System32\wbem\WMIC.exe,Splunk Batches,NT AUTHORITY\SYSTEM
+2019-11-01,admin,*,*,T1047,C:\Windows\system32\cmd.exe /c wmic os get LocalDateTime /value 2&gt;nul,C:\Windows\System32\cmd.exe,C:\Windows\System32\wbem\WMIC.exe,Splunk Batches,NT AUTHORITY\SYSTEM
+2019-11-01,admin,A8FDBA9DF15E41B6F5C69C79F66A26A9D48E174F9E7018A371600B866867DAB8,*,T1086,*,C:\Program Files\SplunkUniversalForwarder\bin\splunk-powershell.exe,C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,Splunk Batches,NT AUTHORITY\SYSTEM
+2019-11-01,admin,A8FDBA9DF15E41B6F5C69C79F66A26A9D48E174F9E7018A371600B866867DAB8,HamzaG-PC.deadsec.com,T1086,*,C:\Program Files\SplunkUniversalForwarder\bin\splunk-powershell.exe,C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,splunk powershell,NT AUTHORITY\SYSTEM
+2019-09-26,ahmedk_admin,29F00C4D8D36CC701B8D903C2341119A9BC2D614BDD8A611B7F01EA45787B0D0,*,*,*,C:\Program Files\SplunkUniversalForwarder\bin\splunkd.exe,*,Splunk Forwarder,*

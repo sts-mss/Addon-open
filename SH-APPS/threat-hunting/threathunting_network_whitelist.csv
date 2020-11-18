@@ -1,0 +1,2 @@
+"added_date",contact,"dst_ip","dst_port","host_fqdn","mitre_technique_id","process_path",reason,"src_ip","user_name"
+"2019-11-01",admin,"127.0.0.1",25,"*",T1043,"C:\Program Files\Microsoft\Exchange Server\V15\Bin\MSExchangeHMWorker.exe","Exchange server","127.0.0.1","*"

@@ -219,6 +219,15 @@ wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_
 wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_windows_indexer.tar.gz'
 wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-microsoft-sysmon_indexer.tar.gz'
 wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/python-for-scientific-computing-for-linux-64-bit_202.tgz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/windows_TA_dhcp.tar.gz'
+
+# Exchange Addons
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-Exchange-ClientAccess.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-Exchange-HubTransport.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-Exchange-Mailbox.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-SMTP-Reputation.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-Windows-Exchange-IIS.tar.gz'
+
 
 
 for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done

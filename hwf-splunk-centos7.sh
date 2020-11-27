@@ -1,15 +1,8 @@
 #!/bin/bash
 
 # 30/06/20 Author: John Barnett
-# Jul/12/2020 Last Edited by: Moath Maharmeh
-
-# Script created on / for CentOS 8 ONLY
-# Community script to create a Splunk syslog-ng heavy forwarder from scratch, use at your own risk
+# Nov/27/2020 Last Edited by: Moath Maharmeh
 # Project home = https://gitlab.com/J-C-B/community-splunk-scripts
-# wget https://gitlab.com/J-C-B/community-splunk-scripts/-/raw/master/hwf-splunk-centos8.sh
-################################################################################################################
-## It is designed to run once and assumes a clean system and takes little care as to any existing config    ####
-################################################################################################################
 
 # Handy commands for troubleshooting
 ## tcpdump -i eth0 'port 514'                                                               ## see the flow over a port as events are received (or not)
@@ -22,10 +15,17 @@ echo "LANG=en_US.utf-8
 LC_ALL=en_US.utf-8
 " > /etc/environment
 
+#Update package lists
+yum update -y
+
+
+# Install tools
+yum install nano wget tcpdump firewalld net-tools netstat multitail htop lsof git iptraf-ng unzip syslog-ng -y
+systemctl start firewalld
+
+
 # remove default sysloger
 yum remove rsyslog -y
-
-
 
 
 # Add epel repo for installing syslog-ng
@@ -35,18 +35,11 @@ rpm -Uvh epel-release-latest-7.noarch.rpm
 #wget -O czanik-syslog-ng314-epel-7.repo https://copr.fedorainfracloud.org/coprs/czanik/syslog-ng314/repo/epel-7/czanik-syslog-ng314-epel-7.repo
 #mv czanik-syslog-ng314-epel-7.repo /etc/yum.repos.d/
 
+
 wget -O czanik-syslog-ng329-epel-7.repo https://copr.fedorainfracloud.org/coprs/czanik/syslog-ng329/repo/epel-7/czanik-syslog-ng329-epel-7.repo
 mv czanik-syslog-ng329-epel-7.repo /etc/yum.repos.d/
 
 
-
-# Install tools
-yum install nano wget tcpdump firewalld -y
-yum install net-tools netstat -y
-yum install lsof -y
-yum install git -y
-yum install syslog-ng multitail htop iptraf-ng -y
-systemctl start firewalld
 
 tmp_dir_path=$(mktemp -d -t splunk-XXXXXXXXXX)
 echo "[+] Using temp directory: $tmp_dir_path"
@@ -89,7 +82,7 @@ firewall-cmd --list-all
 
 # Splunk Resources Limits
 cd $tmp_dir_path
-wget -O 99-splunk.conf 'https://vegalayer.com/splunk/configs/99-splunk.conf' --no-check-certificate
+wget -O 99-splunk.conf 'https://vegalayer.com.com/splunk/configs/99-splunk.conf'
 
 echo "[+] 99-splunk.conf -> /etc/security/limits.d/"
 mv 99-splunk.conf /etc/security/limits.d/
@@ -106,7 +99,7 @@ cat /sys/kernel/mm/transparent_hugepage/defrag
 
 # Disable THP at boot
 cd $tmp_dir_path
-wget -O disable-thp.service 'https://vegalayer.com/splunk/configs/disable-thp.service' --no-check-certificate
+wget -O disable-thp.service 'https://vegalayer.com.com/splunk/configs/disable-thp.service'
 echo "[+] disable-thp.service -> /etc/systemd/system/"
 mv disable-thp.service /etc/systemd/system/
 
@@ -154,7 +147,7 @@ sed "s/SELINUXTYPE=targeted/#SELINUXTYPE=targeted/g" -i /etc/selinux/config
 # Add syslog listener
 # cd $tmp_dir_path
 # mkdir -p /etc/syslog-ng/conf.d/
-# wget -O listeners_4_splunk.conf 'http://vegalayer.com/splunk/configs/syslog-ng/listeners_4_splunk.conf'
+# wget -O listeners_4_splunk.conf 'https://vegalayer.com.com/splunk/configs/syslog-ng/listeners_4_splunk.conf'
 # echo "[+] Adding Syslog-ng splunk listener listeners_4_splunk.conf"
 # echo "[+] listeners_4_splunk.conf -> /etc/syslog-ng/conf.d/"
 # mv listeners_4_splunk.conf /etc/syslog-ng/conf.d/
@@ -172,14 +165,12 @@ chown -R splunk:splunk /opt/log
 cd /opt
 mkdir -p /opt/splunk/etc
 
-echo "[+] Downloading splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz"
+echo "[+] Downloading splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz"
 
 #wget -O splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.2.5.1&product=splunk&filename=splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-7.3.0-657388c7a488-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.3.0&product=splunk&filename=splunk-7.3.0-657388c7a488-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.3&product=splunk&filename=splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.6&product=splunk&filename=splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz&wget=true'
-
-
 wget -O splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.1.0&product=splunk&filename=splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz&wget=true'
 
 
@@ -189,25 +180,29 @@ wget -O splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz 'https://www.splunk.com/bin/s
 #tar -xf splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz
 tar -xf splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz
 
+
 chown -R splunk:splunk splunk
 
 # Skip Splunk Tour and Change Password dialogue
 touch -p /opt/splunk/etc/.ui_login
 
-
+########################## Install apps
 cd $tmp_dir_path
+mkdir spk_apps
+cd spk_apps
+
 echo "Installing Splunk Base Apps..."
 
 # 9997 listener app
-wget 'https://vegalayer.com/splunk/apps/tcp_listener.tar.gz' --no-check-certificate
+wget --no-check-certificate 'https://vegalayer.comm/splunk/live/apps/tcp_listener.tar.gz'
 
 # syslog-ng configs app
-wget 'https://vegalayer.com/splunk/apps/syslogng_monitors.tar.gz' --no-check-certificate
+wget --no-check-certificate 'https://vegalayer.comm/splunk/live/apps/syslogng_monitors.tar.gz'
 
 # Universal forwarder app. HF server -> Indexer server
 # Add listener for splunk TCP 9997 (for UF and other HWF)
 # Replace indexer server ip in /opt/splunk/etc/apps/uf_outputs/local/outputs.conf
-wget 'https://vegalayer.com/splunk/apps/uf_outputs.tar.gz' --no-check-certificate
+wget --no-check-certificate 'https://vegalayer.comm/splunk/live/apps/uf_outputs.tar.gz'
 
 for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done
 
@@ -217,12 +212,13 @@ cd $tmp_dir_path
 mkdir spk_addons
 cd spk_addons
 
-wget 'https://vegalayer.com/splunk/apps/addons/splunk-add-on-for-unix-and-linux_820.tgz' --no-check-certificate
-wget 'https://vegalayer.com/splunk/apps/addons/splunk-health-assistant-add-on_11.tgz' --no-check-certificate
-wget 'https://vegalayer.com/splunk/apps/addons/splunk-add-on-for-microsoft-sysmon_1062.tgz' --no-check-certificate
-wget 'https://vegalayer.com/splunk/apps/addons/splunk-add-on-for-microsoft-windows_800.tgz' --no-check-certificate
-wget 'https://vegalayer.com/splunk/apps/addons/splunk-supporting-add-on-for-active-directory_301.tgz' --no-check-certificate
-wget 'https://vegalayer.com/splunk/apps/addons/splunk-add-on-for-microsoft-iis_101.tgz' --no-check-certificate
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/splunk-health-assistant-add-on_11.tgz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_microsoft_ad.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_microsoft_dns.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_microsoft-iis.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_windows_indexer.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-microsoft-sysmon_indexer.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/python-for-scientific-computing-for-linux-64-bit_202.tgz'
 
 
 for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done
@@ -243,7 +239,7 @@ enableSplunkWebSSL = true
 
 mkdir -p /etc/init.d/splunk
 
-chown -R splunk:splunk /opt/splunk
+chown -R splunk:splunk /opt/
 
 echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
 
@@ -252,15 +248,15 @@ echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time w
 
 
 echo "Cleaning up..."
+rm -rf /opt/splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz
 rm -rf /opt/splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz
 rm -rf /opt/splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
 rm -rf /opt/splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
 rm -rf /opt/splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
-rm -rf /opt/splunk/splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz
+
 
 # Adjust permissions
-chown -R splunk:splunk /opt/splunk
-chown -R splunk:splunk /opt/log
+chown -R splunk:splunk /opt/
 
 
 echo "

@@ -1,17 +1,10 @@
 #!/bin/bash
 
 # 30/06/20 Author: John Barnett
-# Jul/12/2020 Last Edited by: Moath Maharmeh
+# Nov/27/2020 Last Edited by: Moath Maharmeh
 
-# Script created on / for CentOS 8 ONLY
-# Community script to create a Splunk syslog-ng heavy forwarder from scratch, use at your own risk
 # Project home = https://gitlab.com/J-C-B/community-splunk-scripts
-# wget https://gitlab.com/J-C-B/community-splunk-scripts/-/raw/master/hwf-splunk-centos8.sh
 
-
-################################################################################################################
-## It is designed to run once and assumes a clean system and takes little care as to any existing config    ####
-################################################################################################################
 
 # Handy commands for troubleshooting
 ## tcpdump -i eth0 'port 8089'                                                               ## see the flow over a port as events are received (or not)
@@ -30,7 +23,7 @@ yum update -y
 
 
 # Install tools
-yum install nano wget tcpdump firewalld net-tools netstat multitail htop lsof git iptraf-ng -y
+yum install nano wget tcpdump firewalld net-tools netstat multitail htop lsof git iptraf-ng unzip -y
 systemctl start firewalld
 
 
@@ -72,7 +65,7 @@ firewall-cmd --list-all
 
 # Splunk Resources Limits
 cd $tmp_dir_path
-wget -O 99-splunk.conf 'http://vegalayer.com/splunk/configs/99-splunk.conf'
+wget -O 99-splunk.conf 'https://vegalayer.com/splunk/configs/99-splunk.conf'
 
 echo "[+] 99-splunk.conf -> /etc/security/limits.d/"
 mv 99-splunk.conf /etc/security/limits.d/
@@ -89,7 +82,7 @@ cat /sys/kernel/mm/transparent_hugepage/defrag
 
 # Disable THP at boot
 cd $tmp_dir_path
-wget -O disable-thp.service 'http://vegalayer.com/splunk/configs/disable-thp.service'
+wget -O disable-thp.service 'https://vegalayer.com/splunk/configs/disable-thp.service'
 echo "[+] disable-thp.service -> /etc/systemd/system/"
 mv disable-thp.service /etc/systemd/system/
 
@@ -135,19 +128,26 @@ sed "s/SELINUXTYPE=targeted/#SELINUXTYPE=targeted/g" -i /etc/selinux/config
 
 
 # add Splunk
+
+# cleanup old splunk related files
+rm -rf /etc/init.d/splunk/
+
 cd /opt
 mkdir -p /opt/splunk/etc
 
-echo "[+] Downloading splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz"
+echo "[+] Downloading splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz"
 
 #wget -O splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.2.5.1&product=splunk&filename=splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-7.3.0-657388c7a488-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.3.0&product=splunk&filename=splunk-7.3.0-657388c7a488-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.3&product=splunk&filename=splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz&wget=true'
+#wget -O splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.6&product=splunk&filename=splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz&wget=true'
 wget -O splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.1.0&product=splunk&filename=splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz&wget=true'
+
 
 #tar -xf splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
 #tar -xf splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
 # tar -xf splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
+#tar -xf splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz
 tar -xf splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz
 
 
@@ -157,56 +157,6 @@ chown -R splunk:splunk splunk
 touch -p /opt/splunk/etc/.ui_login
 
 
-########################## Install base apps
-cd $tmp_dir_path
-echo "Installing Splunk Base Apps..."
-
-# 9997 listener app
-wget 'http://vegalayer.com/splunk/apps/tcp_listener.tar.gz'
-
-# Fetch indexes
-wget 'http://vegalayer.com/splunk/apps/all_indexes.tar.gz'
-
-# Fetch volume indexes
-wget 'http://vegalayer.com/splunk/apps/volume_indexes.tar.gz'
-
-
-for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done
-
-
-########################## Installing addons
-cd $tmp_dir_path
-mkdir spk_addons
-cd spk_addons
-
-wget 'http://vegalayer.com/splunk/apps/addons/splunk-add-on-for-unix-and-linux_820.tgz'
-wget 'http://vegalayer.com/splunk/apps/addons/splunk-health-assistant-add-on_11.tgz'
-wget 'http://vegalayer.com/splunk/apps/addons/splunk-add-on-for-microsoft-sysmon_1062.tgz'
-wget 'http://vegalayer.com/splunk/apps/addons/splunk-add-on-for-microsoft-windows_800.tgz'
-wget 'http://vegalayer.com/splunk/apps/addons/splunk-supporting-add-on-for-active-directory_301.tgz'
-wget 'http://vegalayer.com/splunk/apps/addons/splunk-add-on-for-microsoft-iis_101.tgz'
-
-
-for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done
-#for f in *.tar; do tar -xvf "$f" -C /opt/splunk/etc/apps/; done
-for f in *.tgz; do tar -xf "$f" -C /opt/splunk/etc/apps/; done
-cd $tmp_dir_path
-
-
-########################## Installing apps
-cd $tmp_dir_path
-mkdir spk_apps
-cd spk_apps
-
-wget 'http://vegalayer.com/splunk/apps/all_license_master.tar.gz'
-wget 'http://vegalayer.com/splunk/apps/splunk-app-for-windows-infrastructure_201.tgz'
-wget 'http://vegalayer.com/splunk/apps/splunk-app-for-unix-and-linux_600.tgz'
-wget 'http://vegalayer.com/splunk/apps/splunk-enterprise-security_602.tgz'
-
-
-for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done
-#for f in *.tar; do tar -xvf "$f" -C /opt/splunk/etc/apps/; done
-for f in *.tgz; do tar -xf "$f" -C /opt/splunk/etc/apps/; done
 cd $tmp_dir_path
 
 
@@ -222,23 +172,104 @@ enableSplunkWebSSL = true
 
 mkdir -p /etc/init.d/splunk
 
+
+# Double check - Adjust permissions
 chown -R splunk:splunk /opt/splunk
+chown -R splunk:splunk /opt/splunk-colddata
+chown -R splunk:splunk /opt/splunk-frozendata
+chown -R splunk:splunk /opt/splunk-hotdata
+chown -R splunk:splunk /opt/log
 
 echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
 
-/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd Massive_SV8VdRiYiman --answer-yes --auto-ports --no-prompt
-/opt/splunk/bin/splunk start
+su - splunk -c "/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd Massive_SV8VdRiYiman --answer-yes --auto-ports --no-prompt"
+su - splunk -c "/opt/splunk/bin/splunk start"
+
+##########################
+# Install Splunk Enterprise Seucirty
+#cd $tmp_dir_path
+#wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/splunk-enterprise-security_602.tgz'
+#tar -xf "splunk-enterprise-security_602.tgz" -C /opt/splunk/etc/apps/
+
+#chown -R splunk:splunk /opt/splunk
+#su - splunk -c "/opt/splunk/bin/splunk restart"
+
+########################## Install apps
+cd $tmp_dir_path
+mkdir spk_apps
+cd spk_apps
+
+echo "Installing Splunk Base Apps..."
+
+# 9997 listener app
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/tcp_listener.tar.gz'
+
+# Fetch indexes
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/all_indexes.tar.gz'
+
+# Fetch volume indexes
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/all_volume_indexes.tar.gz'
+
+# license client
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/all_license_master.tar.gz'
+
+
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/splunk-app-for-windows-infrastructure_201.tgz'
+#wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/splunk-app-for-unix-and-linux_600.tgz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/trackme_1226.tgz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/splunk-sankey-diagram-custom-visualization_150.tgz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/punchcard-custom-visualization_140.tgz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/splunk-machine-learning-toolkit_520.tgz'
+
+
+
+for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done
+for f in *.tgz; do tar -xf "$f" -C /opt/splunk/etc/apps/; done
+
+########################## Installing addons
+cd $tmp_dir_path
+mkdir spk_addons
+cd spk_addons
+
+
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/splunk-health-assistant-add-on_11.tgz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_microsoft_ad.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_microsoft_dns.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_microsoft-iis.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/Splunk_TA_windows_indexer.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-microsoft-sysmon_indexer.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/python-for-scientific-computing-for-linux-64-bit_202.tgz'
+
+# Exchange  Addons
+#wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-Windows-Exchange-IIS.tar.gz'
+#wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-SMTP-Reputation.tar.gz'
+#wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-Exchange-Mailbox.tar.gz'
+#wget --no-check-certificate 'https://vegalayer.com/splunk/live/addons/TA-Exchange-ClientAccess.tar.gz'
+
+
+for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done
+for f in *.tgz; do tar -xf "$f" -C /opt/splunk/etc/apps/; done
+#for f in *.tar; do tar -xvf "$f" -C /opt/splunk/etc/apps/; done
+cd $tmp_dir_path
 
 
 echo "Cleaning up..."
+rm -rf /opt/splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz
 rm -rf /opt/splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz
 rm -rf /opt/splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
 rm -rf /opt/splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
 rm -rf /opt/splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
 
-# Adjust permissions
+
+# Double check - Adjust permissions
 chown -R splunk:splunk /opt/splunk
+chown -R splunk:splunk /opt/splunk-colddata
+chown -R splunk:splunk /opt/splunk-frozendata
+chown -R splunk:splunk /opt/splunk-hotdata
 chown -R splunk:splunk /opt/log
+
+
+su - splunk -c "/opt/splunk/bin/splunk restart"
 
 
 echo "

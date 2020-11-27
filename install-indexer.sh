@@ -174,11 +174,7 @@ mkdir -p /etc/init.d/splunk
 
 
 # Double check - Adjust permissions
-chown -R splunk:splunk /opt/splunk
-chown -R splunk:splunk /opt/splunk-colddata
-chown -R splunk:splunk /opt/splunk-frozendata
-chown -R splunk:splunk /opt/splunk-hotdata
-chown -R splunk:splunk /opt/log
+chown -R splunk:splunk /opt/
 
 echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
 

@@ -262,11 +262,7 @@ rm -rf /opt/splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
 
 
 # Double check - Adjust permissions
-chown -R splunk:splunk /opt/splunk
-chown -R splunk:splunk /opt/splunk-colddata
-chown -R splunk:splunk /opt/splunk-frozendata
-chown -R splunk:splunk /opt/splunk-hotdata
-chown -R splunk:splunk /opt/log
+chown -R splunk:splunk /opt/
 
 
 su - splunk -c "/opt/splunk/bin/splunk restart"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 30/06/20 Author: John Barnett
-# Nov/27/2020 Last Edited by: Moath Maharmeh
+# Dec/1/2020 Last Edited by: Moath Maharmeh
 # Project home = https://gitlab.com/J-C-B/community-splunk-scripts
 
 # Handy commands for troubleshooting
@@ -194,15 +194,15 @@ cd spk_apps
 echo "Installing Splunk Base Apps..."
 
 # 9997 listener app
-wget --no-check-certificate 'https://vegalayer.comm/splunk/live/apps/tcp_listener.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/tcp_listener.tar.gz'
 
 # syslog-ng configs app
-wget --no-check-certificate 'https://vegalayer.comm/splunk/live/apps/syslogng_monitors.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/syslogng_monitors.tar.gz'
 
 # Universal forwarder app. HF server -> Indexer server
 # Add listener for splunk TCP 9997 (for UF and other HWF)
 # Replace indexer server ip in /opt/splunk/etc/apps/uf_outputs/local/outputs.conf
-wget --no-check-certificate 'https://vegalayer.comm/splunk/live/apps/uf_outputs.tar.gz'
+wget --no-check-certificate 'https://vegalayer.com/splunk/live/apps/uf_outputs.tar.gz'
 
 for f in *.tar.gz; do tar -zxf "$f" -C /opt/splunk/etc/apps/; done
 
